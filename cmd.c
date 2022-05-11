@@ -47,7 +47,7 @@ int cmd_exec_oshean(char *input_cmd_oshean){
 	else if (pid_exec == 0){
 		printf("\n");
 		if(execve(cmd, args, NULL) < 0){
-			printf("Usage isn't confirmed %d\n", errno);
+			printf("Command not found or something happened, errno: %d\n", errno);
 			kill(getpid(), SIGKILL);
 		}
 		kill(getpid(), SIGKILL);

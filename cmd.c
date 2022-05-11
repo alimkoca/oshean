@@ -11,12 +11,28 @@ int cmd_exec_oshean(char *input_cmd_oshean){
 
 	cmd = (char*)malloc(80);
 
+	// Memory check
 	if(cmd == NULL){
 		printf("NULL Memory Allocation\n");
 	}
+	
+	// NULL arguments necesarry for now, will update argv
 	char* args[] = {cmd, NULL};
+	
+	if(!strcmp(input_cmd_oshean, "exit")){
+		printf("Exit: 0\n");
+		exit(0);
+	}
+	
+	if(input_cmd_oshean < 0 || input_cmd_oshean == NULL){
+		printf("NULL input\n");
+		exit(1);
+	}
+
+	// Fork process
 	pid_exec = fork();
 
+	// Format string
 	if(sprintf(cmd, "/usr/bin/%s", input_cmd_oshean) < 0){
 		printf("What the hell is it?\n");
 		exit(1);
@@ -39,14 +55,7 @@ int cmd_exec_oshean(char *input_cmd_oshean){
 
 	// Parent process
 	else {
-		if(!strcmp(input_cmd_oshean, "exit")){
-			printf("Exit: 0\n");
-			exit(0);
-		}
-		if(input_cmd_oshean < 0 || input_cmd_oshean == NULL){
-			printf("NULL input\n");
-			exit(1);
-		}
+		
 	}	
 		return 0;
 }

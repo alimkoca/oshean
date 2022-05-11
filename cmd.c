@@ -1,21 +1,52 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <signal.h>
+#include <errno.h>
 #include <string.h>
 
 int cmd_exec_oshean(char *input_cmd_oshean){
-	if(!strcmp(input_cmd_oshean, "echo")){
-		printf("Echo test\n");
+	char *cmd;
+	pid_t pid_exec;
+
+	cmd = (char*)malloc(80);
+
+	if(cmd == NULL){
+		printf("NULL Memory Allocation\n");
 	}
-	if(!strcmp(input_cmd_oshean, "clear")){
-		printf("\e[1;1H\e[2J");
-	}
-	if(!strcmp(input_cmd_oshean, "exit")){
-		printf("Exit: 0\n");
-		exit(0);
-	}
-	if(input_cmd_oshean < 0 || input_cmd_oshean == NULL){
-		printf("NULL input\n");
+	char* args[] = {cmd, NULL};
+	pid_exec = fork();
+
+	if(sprintf(cmd, "/usr/bin/%s", input_cmd_oshean) < 0){
+		printf("What the hell is it?\n");
 		exit(1);
+	}
+	
+	// If process has error
+	if(pid_exec < 0){
+		printf("Error can't fork()\n");
+	}
+	
+	// Success
+	else if (pid_exec == 0){
+		printf("\n");
+		if(execve(cmd, args, NULL) < 0){
+			printf("Usage isn't confirmed %d\n", errno);
+			kill(getpid(), SIGKILL);
+		}
+		kill(getpid(), SIGKILL);
+	}
+
+	// Parent process
+	else {
+		if(!strcmp(input_cmd_oshean, "exit")){
+			printf("Exit: 0\n");
+			exit(0);
+		}
+		if(input_cmd_oshean < 0 || input_cmd_oshean == NULL){
+			printf("NULL input\n");
+			exit(1);
+		}
 	}	
-	return 0;
+		return 0;
 }

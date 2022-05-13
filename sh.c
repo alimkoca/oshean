@@ -17,13 +17,11 @@ int spawn_oshean(){
 	signal(SIGINT, int_handler);
 
 	// Variables needed by program
-	char **input_cmd_oshean;
 	size_t size = 0;
+	ssize_t chars;
 	char *user, *hostname;
+	char *input_cmd_oshean = NULL;
 	int n;
-
-	size = 64;
-	input_cmd_oshean = (char**)malloc(size * sizeof(char));
 
 	// User check, if gets error -> exit
 	if((user = oshean_get_user()) == 0){
@@ -35,24 +33,26 @@ int spawn_oshean(){
 		printf("Exiting due to hostname %s\n", hostname);
 		exit(1);
 	}
-osh_pr_shnm:
-	// shell username and hostname print and get input with fgets in down,
-	printf("%s@%s$ ", user, hostname);
-	int chars = getline(input_cmd_oshean, &size, stdin);
-	
-	if(!strcmp(*input_cmd_oshean, "\n")){
-		goto osh_pr_shnm;
-	}
-
-	if((*input_cmd_oshean)[chars - 1] == '\n'){
-		(*input_cmd_oshean)[chars - 1] = '\0';
-	}
-
 	for(;;){
+		// shell username and hostname print and get input with fgets in down,
+                printf("%s@%s$ ", user, hostname);
+
+		if((chars = getline(&input_cmd_oshean, &size, stdin)) == -1){
+			break;
+		}
+		
+		if(!strcmp(input_cmd_oshean, "\n")){
+			continue;
+		}
+
+		if(input_cmd_oshean[chars - 1] == '\n'){
+			input_cmd_oshean[chars - 1] = '\0';
+		}
+
 		// Check errors and execute command
-		if((n = cmd_exec_oshean(*input_cmd_oshean)) != 0){
+		if((n = cmd_exec_oshean(input_cmd_oshean)) != 0){
 			printf("RET: %d\n", n);
 		}
-		goto osh_pr_shnm;
+
 	}
 }

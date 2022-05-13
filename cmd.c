@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <signal.h>
+#include <sys/wait.h>
 #include <errno.h>
 #include <string.h>
 
@@ -16,9 +17,17 @@ int cmd_exec_oshean(char *input_cmd_oshean){
 		printf("NULL Memory Allocation\n");
 	}
 	
-	// NULL arguments necesarry for now, will update argv
-	char* args[] = {cmd, NULL};
+	// Arguments for executing
+	int i = 1;
+	char *args[8];
+	args[0] = strtok(input_cmd_oshean, " ");
 	
+	while(args[i]){
+		args[i] = strtok(NULL, " ");
+		i++;
+	}
+
+	args[i+1] = NULL;
 	if(!strcmp(input_cmd_oshean, "exit")){
 		printf("Exit: 0\n");
 		exit(0);
@@ -34,7 +43,7 @@ int cmd_exec_oshean(char *input_cmd_oshean){
 
 	// Format string
 	if(sprintf(cmd, "/usr/bin/%s", input_cmd_oshean) < 0){
-		printf("What the hell is it?\n");
+		printf("What the hell is it?: %s\n", cmd);
 		exit(1);
 	}
 	
@@ -45,17 +54,15 @@ int cmd_exec_oshean(char *input_cmd_oshean){
 	
 	// Success
 	else if (pid_exec == 0){
-		printf("\n");
 		if(execve(cmd, args, NULL) < 0){
-			printf("Command not found or something happened, errno: %d\n", errno);
-			kill(getpid(), SIGKILL);
+			printf("What the hell is it?: %s\n", cmd);
+			printf("Command not found or something happened, errn %d, %s\n", errno, strerror(errno));
 		}
-		kill(getpid(), SIGKILL);
 	}
 
 	// Parent process
 	else {
-		
+		wait(NULL);
 	}	
 		return 0;
 }

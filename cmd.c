@@ -22,12 +22,12 @@ int cmd_exec_oshean(char *input_cmd_oshean){
 	char *args[8];
 	args[0] = strtok(input_cmd_oshean, " ");
 	
-	while(args[i]){
-		args[i] = strtok(NULL, " ");
+	while((args[i] = strtok(NULL, " "))){
 		i++;
 	}
 
 	args[i+1] = NULL;
+	
 	if(!strcmp(input_cmd_oshean, "exit")){
 		printf("Exit: 0\n");
 		exit(0);

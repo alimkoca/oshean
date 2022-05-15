@@ -7,15 +7,7 @@
 #include "include/cmd.h"
 #include "include/sys.h"
 
-void int_handler(){
-	printf("Exiting due to CTRL-C\n");
-	exit(0);
-}
-
 int spawn_oshean(){
-	// CTRL-C Interrupt for exit
-	signal(SIGINT, int_handler);
-
 	// Variables needed by program
 	size_t size = 0;
 	ssize_t chars;
@@ -35,16 +27,12 @@ int spawn_oshean(){
 	}
 	for(;;){
 		// shell username and hostname print and get input with fgets in down,
-                printf("%s@%s$ ", user, hostname);
+                printf("<\033[0;34m%s@%s\033[0;37m> ", user, hostname);
 
 		if((chars = getline(&input_cmd_oshean, &size, stdin)) == -1){
 			break;
 		}
 		
-		if(!strcmp(input_cmd_oshean, "\n")){
-			continue;
-		}
-
 		if(input_cmd_oshean[chars - 1] == '\n'){
 			input_cmd_oshean[chars - 1] = '\0';
 		}

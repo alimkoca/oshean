@@ -1,0 +1,4 @@
+- Undo and redo commands with writing commands to the log file - half of way...
+- Set config file in ~/.config path - not completed
+- Easier usage for developers(git, nodejs, kernel etc.) - not completed
+- Environment value usage like bash - not completed 

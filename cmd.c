@@ -10,7 +10,7 @@ int cmd_exec_oshean(char *input_cmd_oshean){
 	char *cmd;
 	pid_t pid_exec;
 
-	cmd = (char*)malloc(80);
+	cmd = (char*)malloc(strlen(input_cmd_oshean)+9+1);
 
 	// Memory check
 	if(cmd == NULL){

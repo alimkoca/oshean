@@ -77,7 +77,7 @@ int spawn_oshean(){
 
 		if (!strcmp(args[0], "cd")){
 			if (chdir(args[1]) < 0){
-				printf("chdir() error in sh.c:80\n");
+				printf("%s\n", strerror(errno));
 			}
 			continue;
 		}

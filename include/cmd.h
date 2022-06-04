@@ -5,4 +5,4 @@
 #include <errno.h>
 #include <string.h>
 
-int cmd_exec_oshean(char *input_cmd_oshean);
+int cmd_exec_oshean(char *input_cmd_oshean, char **args);

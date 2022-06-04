@@ -3,6 +3,7 @@
 #include <signal.h>
 #include <curses.h>
 #include <string.h>
+#include <ctype.h>
 #include "include/sh.h"
 #include "include/cmd.h"
 #include "include/sys.h"
@@ -10,11 +11,13 @@
 #include "include/linenoise.h"
 
 char *hints(const char *buff, int *color, int *bold){
+	*color = 2;
+	*bold = 0;
+
 	if (!strcmp(buff, "l")){
-		*color = 2;
-		*bold = 0;
 		return "s";
 	}
+	
 	return NULL;
 }
 
@@ -32,6 +35,7 @@ int spawn_oshean(){
 	char *input_cmd_oshean_bf_tr;
 	char *prompt;
 	int n;
+	char *args[80];
 
 	prompt = malloc(40);
 
@@ -52,25 +56,56 @@ int spawn_oshean(){
 		exit(1);
 	}
 
+	linenoiseSetMultiLine(1);
 	linenoiseSetHintsCallback(hints);
 	linenoiseSetCompletionCallback(completion);
 
 	// Prompt input
 	while((input_cmd_oshean_bf_tr = linenoise(prompt)) != NULL){
+		// Space check again after trim 
+		if (!strcmp(input_cmd_oshean_bf_tr, ""))
+			continue;
+		
 		// Trim the string and return address
 		char *input_cmd_oshean = osh_trim(input_cmd_oshean_bf_tr);
-	
-		linenoiseHistoryAdd(input_cmd_oshean);
 
-		// Space check	
+		osh_set_args(args, input_cmd_oshean);
+
+		// Space check again after trim
 		if (!strcmp(input_cmd_oshean, ""))
 			continue;
 
+		if (!strcmp(args[0], "cd")){
+			if (chdir(args[1]) < 0){
+				printf("chdir() error in sh.c:80\n");
+			}
+			continue;
+		}
+		
+		linenoiseHistoryAdd(input_cmd_oshean);
+
+		if (!strcmp(input_cmd_oshean, "Hello")){
+                	printf("Hello, hello? Uh, I wanted to record a message for you to help you get settled "
+                	"in your tutorial. Um, I actually developer of oshean. "
+                        "I'm finishing up my last commits now, as a matter of fact. "
+                        "So, I know it can be a bit weird, "
+                        "but I'm here to tell you there's nothing to worry about usage. "
+                        "Uh, you'll do fine. "
+                        "So, let's just focus on getting you through commands. Okay?\n");
+			
+			continue;
+		}
+		
 		// Check errors and execute command
-		if((n = cmd_exec_oshean(input_cmd_oshean)) != 0){
+		if ((n = cmd_exec_oshean(input_cmd_oshean, args)) != 0){
 			printf("RET: %d\n", n);
 		}
 
 		free(input_cmd_oshean_bf_tr);
 	}
+
+	free(prompt);
+	free(user);
+	free(hostname);
+	free(input_cmd_oshean_bf_tr);
 }

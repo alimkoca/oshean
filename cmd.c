@@ -7,15 +7,12 @@
 #include <string.h>
 #include "include/std.h"
 
-int cmd_exec_oshean(char *input_cmd_oshean){
+int cmd_exec_oshean(char *input_cmd_oshean, char **args){
 	char *cmd;
 	pid_t pid_exec;
 	
 	// Arguments for executing
 	int i = 1;
-	char *args[80];
-
-	osh_set_args(args, input_cmd_oshean);
 
 	cmd = (char*)malloc(strlen(input_cmd_oshean)+9+1+i+1);
 

@@ -1,12 +1,14 @@
-/* linenoise.h -- guerrilla line editing library against the idea that a
- * line editing lib needs to be 20,000 lines of C code.
+/* linenoise.h -- VERSION 1.0
+ *
+ * Guerrilla line editing library against the idea that a line editing lib
+ * needs to be 20,000 lines of C code.
  *
  * See linenoise.c for more information.
  *
  * ------------------------------------------------------------------------
  *
- * Copyright (c) 2010, Salvatore Sanfilippo <antirez at gmail dot com>
- * Copyright (c) 2010, Pieter Noordhuis <pcnoordhuis at gmail dot com>
+ * Copyright (c) 2010-2014, Salvatore Sanfilippo <antirez at gmail dot com>
+ * Copyright (c) 2010-2013, Pieter Noordhuis <pcnoordhuis at gmail dot com>
  *
  * All rights reserved.
  *
@@ -37,143 +39,46 @@
 #ifndef __LINENOISE_H
 #define __LINENOISE_H
 
-#ifndef NO_COMPLETION
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct linenoiseCompletions {
   size_t len;
   char **cvec;
 } linenoiseCompletions;
 
-/*
- * The callback type for tab completion handlers.
- */
 typedef void(linenoiseCompletionCallback)(const char *, linenoiseCompletions *);
-
-/*
- * Sets the current tab completion handler and returns the previous one, or NULL
- * if no prior one has been set.
- */
-linenoiseCompletionCallback * linenoiseSetCompletionCallback(linenoiseCompletionCallback *);
-
-/*
- * Adds a copy of the given string to the given completion list. The copy is owned
- * by the linenoiseCompletions object.
- */
+typedef char*(linenoiseHintsCallback)(const char *, int *color, int *bold);
+typedef void(linenoiseFreeHintsCallback)(void *);
+void linenoiseSetCompletionCallback(linenoiseCompletionCallback *);
+void linenoiseSetHintsCallback(linenoiseHintsCallback *);
+void linenoiseSetFreeHintsCallback(linenoiseFreeHintsCallback *);
 void linenoiseAddCompletion(linenoiseCompletions *, const char *);
-#endif
 
-/*
- * Prompts for input using the given string as the input
- * prompt. Returns when the user has tapped ENTER or (on an empty
- * line) EOF (Ctrl-D on Unix, Ctrl-Z on Windows). Returns either
- * a copy of the entered string (for ENTER) or NULL (on EOF).  The
- * caller owns the returned string and must eventually free() it.
- */
 char *linenoise(const char *prompt);
-
-/*
- * Adds a copy of the given line of the command history.
- */
+void linenoiseFree(void *ptr);
 int linenoiseHistoryAdd(const char *line);
-
-/*
- * Sets the maximum length of the command history, in lines.
- * If the history is currently longer, it will be trimmed,
- * retaining only the most recent entries. If len is 0 or less
- * then this function does nothing.
- */
 int linenoiseHistorySetMaxLen(int len);
-
-/*
- * Returns the current maximum length of the history, in lines.
- */
-int linenoiseHistoryGetMaxLen(void);
-
-/*
- * Saves the current contents of the history to the given file.
- * Returns 0 on success.
- */
 int linenoiseHistorySave(const char *filename);
-
-/*
- * Replaces the current history with the contents
- * of the given file.  Returns 0 on success.
- */
 int linenoiseHistoryLoad(const char *filename);
+void linenoiseClearScreen(void);
+void linenoiseSetMultiLine(int ml);
+void linenoisePrintKeyCodes(void);
+void linenoiseMaskModeEnable(void);
+void linenoiseMaskModeDisable(void);
 
-/*
- * Frees all history entries, clearing the history.
- */
-void linenoiseHistoryFree(void);
+typedef size_t (linenoisePrevCharLen)(const char *buf, size_t buf_len, size_t pos, size_t *col_len);
+typedef size_t (linenoiseNextCharLen)(const char *buf, size_t buf_len, size_t pos, size_t *col_len);
+typedef size_t (linenoiseReadCode)(int fd, char *buf, size_t buf_len, int* c);
 
-/*
- * Returns a pointer to the list of history entries, writing its
- * length to *len if len is not NULL. The memory is owned by linenoise
- * and must not be freed.
- */
-char **linenoiseHistory(int *len);
-
-/*
- * Returns the number of display columns in the current terminal.
- */
-int linenoiseColumns(void);
-
-struct linenoiseTextAttr
-{
-    int has_fg;   // 0 default, 1 normal, >1|<0 bright
-    int fg_color; // 0 to 7, -1 default
-    int bold_fg;
-
-    int has_bg;
-    int bg_color; // -1 default
-    int invert_bg_fg;
-
-    int underline;
-};
-
-/**
- *  set prompt color
- */
-void linenoiseSetPromptAttr(struct linenoiseTextAttr const *textAttr);
+void linenoiseSetEncodingFunctions(
+    linenoisePrevCharLen *prevCharLenFunc,
+    linenoiseNextCharLen *nextCharLenFunc,
+    linenoiseReadCode *readCodeFunc);
 
 #ifdef __cplusplus
-#define LINENOISE_DEFAULT_ARG(arg, value) arg = value
-#else
-#define LINENOISE_DEFAULT_ARG(arg, value) arg
+}
 #endif
-
-/**
- *  Allows printing while line editing is being done
- */
-void linenoisePrintLine(const char *line, LINENOISE_DEFAULT_ARG(struct linenoiseTextAttr const * textAttr, 0));
-
-/**
- *  Allows printing while line editing is being done
- */
-void linenoiseErrorLine(const char *line, LINENOISE_DEFAULT_ARG(struct linenoiseTextAttr const * textAttr, 0));
-
-/**
- *  Interrupt current line editing operation
- */
-void linenoiseCancel();
-
-/**
- *  Get console size
- */
-int linenoiseWinSize(int *columns, int *rows);
-
-struct linenoiseTextWithAttr {
-    const char *text;
-    struct linenoiseTextAttr const * attr;
-};
-
-/**
- *  Allows printing while line editing is being done, multiple colors in single line
- */
-void linenoisePrintAttrLine(const struct linenoiseTextWithAttr *textWithAttr, size_t n);
-
-/**
- *  Allows printing while line editing is being done, multiple colors in single line
- */
-void linenoiseErrorAttrLine(const struct linenoiseTextWithAttr *textWithAttr, size_t n);
 
 #endif /* __LINENOISE_H */

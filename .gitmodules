@@ -1,6 +1,0 @@
-[submodule "include/colornoise"]
-	path = include/colornoise
-	url = https://github.com/hp-peti/colornoise
-[submodule "include/--force"]
-	path = include/--force
-	url = https://github.com/yhirose/linenoise

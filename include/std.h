@@ -1,21 +1,11 @@
+#pragma once
+
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <ctype.h>
 
-char *ltrim(char *s){
-	while(isspace(*s)) 
-		s++;
-	return s;
-}
-
-char *rtrim(char *s){
-	char* back = s + strlen(s);
-	while(isspace(*--back));
-		*(back+1) = '\0';
-	return s;
-}
-
-char *osh_trim(char *s){
-	return rtrim(ltrim(s)); 
-}
-
+char *ltrim(char *s);
+char *rtrim(char *s);
+char *osh_trim(char *s);
+char *osh_set_args(char **arg, char *cmd);

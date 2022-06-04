@@ -1,98 +1,55 @@
-#ifndef UTF8_UTIL_H
-#define UTF8_UTIL_H
-/**
- * UTF-8 utility functions
+/* encodings/utf8.h -- VERSION 1.0
  *
- * (c) 2010 Steve Bennett <steveb@workware.net.au>
- * (c) 2020 Peter Hanos-Puskai <hp.peti@gmail.com>
+ * Guerrilla line editing library against the idea that a line editing lib
+ * needs to be 20,000 lines of C code.
  *
- * See LICENCE for licence details.
+ * See linenoise.c for more information.
+ *
+ * ------------------------------------------------------------------------
+ *
+ * Copyright (c) 2010-2014, Salvatore Sanfilippo <antirez at gmail dot com>
+ * Copyright (c) 2010-2013, Pieter Noordhuis <pcnoordhuis at gmail dot com>
+ *
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ *
+ *  *  Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
+ *
+ *  *  Redistributions in binary form must reproduce the above copyright
+ *     notice, this list of conditions and the following disclaimer in the
+ *     documentation and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef USE_UTF8
-#include <ctype.h>
+#ifndef __LINENOISE_ENCODINGS_UTF8_H
+#define __LINENOISE_ENCODINGS_UTF8_H
 
-/* No utf-8 support. 1 byte = 1 char */
-#define utf8_strlen(S, B) ((B) < 0 ? (int)strlen(S) : (B))
-#define utf8_tounicode(S, CP) (*(CP) = (unsigned char)*(S), 1)
-#define utf8_index(C, I) (I)
-#define utf8_charlen(C) 1
-
-#else
-#include <wchar.h>
-/**
- * Converts the given unicode codepoint (0 - 0xffff) to utf-8
- * and stores the result at 'p'.
- * 
- * Returns the number of utf-8 characters (1-3).
- */
-int utf8_fromunicode(char *p, unsigned short uc);
-
-/**
- * Returns the length of the utf-8 sequence starting with 'c'.
- * 
- * Returns 1-4, or -1 if this is not a valid start byte.
- *
- * Note that charlen=4 is not supported by the rest of the API.
- */
-int utf8_charlen(int c);
-
-/**
- * Returns the number of characters in the utf-8 
- * string of the given byte length.
- *
- * Any bytes which are not part of an valid utf-8
- * sequence are treated as individual characters.
- *
- * The string *must* be null terminated.
- *
- * Does not support unicode code points > \uffff
- */
-int utf8_strlen(const char *str, int bytelen);
-
-/**
- * Returns the byte index of the given character in the utf-8 string.
- * 
- * The string *must* be null terminated.
- *
- * This will return the byte length of a utf-8 string
- * if given the char length.
- */
-int utf8_index(const char *str, int charindex);
-
-/**
- * Returns the unicode codepoint corresponding to the
- * utf-8 sequence 'str'.
- * 
- * Stores the result in *uc and returns the number of bytes
- * consumed.
- *
- * If 'str' is null terminated, then an invalid utf-8 sequence
- * at the end of the string will be returned as individual bytes.
- *
- * If it is not null terminated, the length *must* be checked first.
- *
- * Does not support unicode code points > \uffff
- */
-int utf8_tounicode(const char *str, int *uc);
-
-/**
-* Converts utf8 string to wide chars
-*
-* Returns the number of characters in the utf-8
-* string of the given byte length.
-*
-* Any bytes which are not part of an valid utf-8
-* sequence are treated as individual characters.
-*
-* Does not support unicode code points > \uffff
-*
-* Goes up to bytelen. If bytelen is negative, it calculates the length of the string
-* 
-* Stores output to wstr up until charlen is reached.
-*/
-int utf8_to_wchar(const char *str, int bytelen, wchar_t *wstr, int charlen);
-
+#ifdef __cplusplus
+extern "C" {
 #endif
 
+size_t linenoiseUtf8PrevCharLen(const char* buf, size_t buf_len, size_t pos, size_t *col_len);
+size_t linenoiseUtf8NextCharLen(const char* buf, size_t buf_len, size_t pos, size_t *col_len);
+size_t linenoiseUtf8ReadCode(int fd, char* buf, size_t buf_len, int* cp);
+
+#ifdef __cplusplus
+}
 #endif
+
+#endif /* __LINENOISE_ENCODINGS_UTF8_H */
+

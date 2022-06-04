@@ -10,8 +10,7 @@
 int cmd_exec_oshean(char *input_cmd_oshean){
 	char *cmd;
 	pid_t pid_exec;
-
-<<<<<<< HEAD
+	
 	// Arguments for executing
 	int i = 1;
 	char *args[80];
@@ -19,9 +18,6 @@ int cmd_exec_oshean(char *input_cmd_oshean){
 	osh_set_args(args, input_cmd_oshean);
 
 	cmd = (char*)malloc(strlen(input_cmd_oshean)+9+1+i+1);
-=======
-	cmd = (char*)malloc(strlen(input_cmd_oshean)+9+1);
->>>>>>> 2dab2a517ac9e5b6755fef11630d2b5bc7cf1de2
 
 	// Memory check
 	if (cmd == NULL){

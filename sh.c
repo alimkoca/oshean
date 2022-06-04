@@ -95,6 +95,11 @@ int spawn_oshean(){
 			
 			continue;
 		}
+
+		if (!strcmp(input_cmd_oshean, "clear")){
+			linenoiseClearScreen();
+			continue;
+		}
 		
 		// Check errors and execute command
 		if ((n = cmd_exec_oshean(input_cmd_oshean, args)) != 0){

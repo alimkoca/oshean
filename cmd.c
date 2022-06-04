@@ -47,7 +47,6 @@ int cmd_exec_oshean(char *input_cmd_oshean, char **args){
 	// Success
 	else if (pid_exec == 0){
 		if (execve(cmd, args, NULL) < 0){	
-			printf("I'm in here cmd.c:68\n");
 			printf("%s: %s\n", strerror(errno), cmd);
 			kill(getpid(), SIGKILL);
 		}

@@ -17,13 +17,45 @@ char *hints(const char *buff, int *color, int *bold){
 	if (!strcmp(buff, "l")){
 		return "s";
 	}
-	
+
+	if (!strcmp(buff, "p")){
+		return "wd";
+	}
+
+        if (!strcmp(buff, "c")){
+		return "d";
+	}
+
+	if (!strcmp(buff, "v")){
+		return "im";
+	}
+
+	if (!strcmp(buff, "na")){
+		return "no";
+	}
+				
 	return NULL;
 }
 
 void completion(const char *buff, linenoiseCompletions *lc){
 	if (!strcmp(&buff[0], "l")){
 		linenoiseAddCompletion(lc, "ls");
+	}
+
+	if (!strcmp(&buff[0], "p")){
+		linenoiseAddCompletion(lc, "pwd");
+	}
+
+	if (!strcmp(&buff[0], "c")){
+		linenoiseAddCompletion(lc, "cd");
+	}
+
+	if (!strcmp(&buff[0], "v")){
+		linenoiseAddCompletion(lc, "vim");
+	}
+
+	if (!strcmp(buff, "na")){
+		linenoiseAddCompletion(lc, "nano");
 	}
 }
 

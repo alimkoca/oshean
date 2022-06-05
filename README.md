@@ -1,5 +1,5 @@
 # oshean
-personal shell
+oceanic shell for developers.
 
 Dependencies:
 ```

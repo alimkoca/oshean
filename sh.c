@@ -66,10 +66,12 @@ int spawn_oshean(){
 	char *user, *hostname;
 	char *input_cmd_oshean_bf_tr;
 	char *prompt;
+	char *home_p;
 	int n;
 	char *args[80];
 
-	prompt = malloc(40);
+	prompt = (char*)malloc(40);
+	home_p = (char*)malloc(40);
 
 	// User check, if gets error -> exit
 	if ((user = oshean_get_user()) == 0){
@@ -84,8 +86,17 @@ int spawn_oshean(){
 
 	// Prompt formatting
 	if (sprintf(prompt, "<\033[0;34m%s@%s\033[0;37m> ", user, hostname)  < 0){
-		printf("Exiting due to sprintf\n");
+		printf("Exiting due to sprintf, sh.c:88\n");
 		exit(1);
+	}
+
+	if (sprintf(home_p, "/home/%s", user) < 0){
+		printf("Exiting due to sprintf, sh.c:93\n");
+		exit(1);
+	}
+
+	if (chdir(home_p) < 0){
+		printf("%s\n", strerror(errno));
 	}
 
 	linenoiseSetMultiLine(1);

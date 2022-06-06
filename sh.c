@@ -10,6 +10,7 @@
 #include "include/std.h"
 #include "include/linenoise.h"
 
+// hints and completions
 char *hints(const char *buff, int *color, int *bold){
 	*color = 2;
 	*bold = 0;
@@ -70,6 +71,7 @@ int spawn_oshean(){
 	int n;
 	char *args[80];
 
+	// memory allocation
 	prompt = (char*)malloc(40);
 	home_p = (char*)malloc(40);
 
@@ -104,11 +106,21 @@ int spawn_oshean(){
 	linenoiseSetCompletionCallback(completion);
 
 	// Prompt input
-	while((input_cmd_oshean_bf_tr = linenoise(prompt)) != NULL){
+	for (;;){
+		errno = 0;
+
+		input_cmd_oshean_bf_tr = linenoise(prompt);
+
+		if (!input_cmd_oshean_bf_tr){
+			if (errno != EAGAIN)
+				break;
+			continue;
+		}
+
 		// Space check again after trim 
 		if (!strcmp(input_cmd_oshean_bf_tr, ""))
 			continue;
-		
+
 		// Trim the string and return address
 		char *input_cmd_oshean = osh_trim(input_cmd_oshean_bf_tr);
 
@@ -118,6 +130,7 @@ int spawn_oshean(){
 		if (!strcmp(input_cmd_oshean, ""))
 			continue;
 
+		// cd builtin command
 		if (!strcmp(args[0], "cd")){
 			if (chdir(args[1]) < 0){
 				printf("%s\n", strerror(errno));
@@ -125,7 +138,7 @@ int spawn_oshean(){
 			continue;
 		}
 		
-		linenoiseHistoryAdd(input_cmd_oshean);
+		linenoiseHistoryAdd(input_cmd_oshean_bf_tr);
 
 		if (!strcmp(input_cmd_oshean, "Hello")){
                 	printf("Hello, hello? Uh, I wanted to record a message for you to help you get settled "
@@ -139,6 +152,7 @@ int spawn_oshean(){
 			continue;
 		}
 
+		// clear screen, basically
 		if (!strcmp(input_cmd_oshean, "clear")){
 			linenoiseClearScreen();
 			continue;
@@ -152,7 +166,9 @@ int spawn_oshean(){
 		free(input_cmd_oshean_bf_tr);
 	}
 
+	// avoid memory leaks
 	free(prompt);
+	free(home_p);
 	free(user);
 	free(hostname);
 	free(input_cmd_oshean_bf_tr);

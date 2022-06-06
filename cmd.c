@@ -5,16 +5,20 @@
 #include <sys/wait.h>
 #include <errno.h>
 #include <string.h>
+#include "include/linenoise.h"
 #include "include/std.h"
+#include "include/env.h"
+
+extern char **environ;
 
 int cmd_exec_oshean(char *input_cmd_oshean, char **args){
 	char *cmd;
+	char *env_val[100];
 	pid_t pid_exec;
-	
-	// Arguments for executing
-	int i = 1;
+		
+	set_env_var(env_val, environ);
 
-	cmd = (char*)malloc(strlen(input_cmd_oshean)+9+1+i+1);
+	cmd = (char*)malloc(strlen(input_cmd_oshean)+9+1+sizeof(args)+1);
 
 	// Memory check
 	if (cmd == NULL){
@@ -46,7 +50,7 @@ int cmd_exec_oshean(char *input_cmd_oshean, char **args){
 	
 	// Success
 	else if (pid_exec == 0){
-		if (execve(cmd, args, NULL) < 0){	
+		if (execve(cmd, args, env_val) < 0){
 			printf("%s: %s\n", strerror(errno), cmd);
 			kill(getpid(), SIGKILL);
 		}

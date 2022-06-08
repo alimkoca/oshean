@@ -64,14 +64,21 @@ void completion(const char *buff, linenoiseCompletions *lc){
 }
 
 int spawn_oshean(){
-	// Variables needed by program
+	// Size equals 0
 	size_t size = 0;
+	// Character number
 	ssize_t chars;
+	// User and hostname
 	char *user, *hostname;
+	// Input before space trimming
 	char *input_cmd_oshean_bf_tr;
+	// Prompt value
 	char *prompt;
+	// Home path
 	char *home_p;
+	// Regular n value used in loop
 	int n;
+	// Command line arguments
 	char *args[80];
 
 	// memory allocation
@@ -104,11 +111,13 @@ int spawn_oshean(){
 		printf("%s\n", strerror(errno));
 	}
 
+	// linenoise settings
 	linenoiseSetMultiLine(1);
 	linenoiseSetHintsCallback(hints);
 	linenoiseSetCompletionCallback(completion);
 	linenoiseHistorySetMaxLen(100);
-	
+
+	// UTF-8 encoding functions
 #ifdef UTF8
 	linenoiseSetEncodingFunctions(
 		linenoiseUtf8PrevCharLen,
@@ -123,8 +132,10 @@ int spawn_oshean(){
 		input_cmd_oshean_bf_tr = linenoise(prompt);
 
 		if (!input_cmd_oshean_bf_tr){
+			// Equalivent to CTRL-D
 			if (errno != EAGAIN)
 				break;
+			// CTRL-C, NULL
 			continue;
 		}
 
@@ -135,8 +146,10 @@ int spawn_oshean(){
 		// Trim the string and return address
 		char *input_cmd_oshean = osh_trim(input_cmd_oshean_bf_tr);
 
+		// Add command to history
 		linenoiseHistoryAdd(input_cmd_oshean);
 
+		// Set args[80] value
 		osh_set_args(args, input_cmd_oshean);
 
 		// Space check again after trim
@@ -150,7 +163,8 @@ int spawn_oshean(){
 			}
 			continue;
 		}
-		
+
+		// ZWFzdGVyIGVnZy4uLg==	
 		if (!strcmp(input_cmd_oshean, "Hello")){
                 	printf("Hello, hello? Uh, I wanted to record a message for you to help you get settled "
                 	"in your tutorial. Um, I actually developer of oshean. "
@@ -174,6 +188,7 @@ int spawn_oshean(){
 			printf("RET: %d\n", n);
 		}
 
+		// Free the memory
 		free(input_cmd_oshean_bf_tr);
 	}
 

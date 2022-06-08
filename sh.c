@@ -1,3 +1,5 @@
+#define UTF8
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
@@ -9,6 +11,7 @@
 #include "include/sys.h"
 #include "include/std.h"
 #include "include/linenoise.h"
+#include "include/utf8.h"
 
 // hints and completions
 char *hints(const char *buff, int *color, int *bold){
@@ -104,6 +107,14 @@ int spawn_oshean(){
 	linenoiseSetMultiLine(1);
 	linenoiseSetHintsCallback(hints);
 	linenoiseSetCompletionCallback(completion);
+	linenoiseHistorySetMaxLen(100);
+	
+#ifdef UTF8
+	linenoiseSetEncodingFunctions(
+		linenoiseUtf8PrevCharLen,
+		linenoiseUtf8NextCharLen,
+		linenoiseUtf8ReadCode);
+#endif
 
 	// Prompt input
 	for (;;){
@@ -124,6 +135,8 @@ int spawn_oshean(){
 		// Trim the string and return address
 		char *input_cmd_oshean = osh_trim(input_cmd_oshean_bf_tr);
 
+		linenoiseHistoryAdd(input_cmd_oshean);
+
 		osh_set_args(args, input_cmd_oshean);
 
 		// Space check again after trim
@@ -138,8 +151,6 @@ int spawn_oshean(){
 			continue;
 		}
 		
-		linenoiseHistoryAdd(input_cmd_oshean_bf_tr);
-
 		if (!strcmp(input_cmd_oshean, "Hello")){
                 	printf("Hello, hello? Uh, I wanted to record a message for you to help you get settled "
                 	"in your tutorial. Um, I actually developer of oshean. "
